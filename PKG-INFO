@@ -1,0 +1,9 @@
+Metadata-Version: 2.0
+Name: sde
+Version: 1.0
+Summary: HTML Structured Data Extractor
+Author: Ivan Herman
+Author-email: ivan@w3.org
+License: W3C© SOFTWARE NOTICE AND LICENSE
+Description: Extraction of RDFa, microdata, and embedded Turtle content from HTML, and its conversion into an RDF graph
+Platform: any
