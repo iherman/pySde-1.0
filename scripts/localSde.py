@@ -8,15 +8,18 @@ import sys
 # You may want to adapt this to your environment...
 import sys, getopt, platform
 
+sys.path.insert(0,"/Users/ivan/Library/Python")
+sys.path.insert(0,"/Users/ivan/Library/Python/RDFa")
+
 from pySde.options import SDEOptions
 from pySde import pySde
-		
-###########################################	
+
+###########################################
 
 
 usageText="""Usage: %s -[armsvxtjnpb:] [filename[s]]
 where:
-  -r: distill RDFa 
+  -r: distill RDFa
   -m: distill Microdata
   -h: distill hturtle script
   -a: distill in RDFa, Microdata, and hturtle (shorthand for -rmh)
@@ -37,9 +40,9 @@ def usage() :
 
 format       = "turtle"
 base         = ""
-rdfa         = True
-microdata    = True
-hturtle      = True
+rdfa         = False
+microdata    = False
+hturtle      = False
 vocab_expand = False
 
 try :
@@ -79,7 +82,3 @@ if len(value) >= 1 :
 	print processor.rdf_from_sources(value, outputFormat = format)
 else :
 	print processor.rdf_from_source(sys.stdin, outputFormat = format)
-	
-	
-
-	
