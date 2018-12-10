@@ -71,7 +71,7 @@ class pySde :
 	@ivar base: the base value for processing
 	@ivar http_status: HTTP Status, to be returned when the package is used via a CGI entry. Initially set to 200, may be modified by exception handlers
 	"""
-	
+
 	def __init__(self, base = "", options = SDEOptions()) :
 		"""
 		@keyword base: URI for the default "base" value (usually the URI of the file to be processed)
@@ -87,7 +87,7 @@ class pySde :
 	def _generate_error_graph(self, pgraph, full_msg, uri = None) :
 		"""
 		Generate an error message into the graph. This method is usually used reacting on exceptions.
-		
+
 		Later versions of pyMicrodata may have more detailed error conditions on which it wishes to react. At the moment, this
 		is fairly crude...
 		"""
@@ -95,7 +95,7 @@ class pySde :
 			retval = Graph()
 		else :
 			retval = pgraph
-			
+
 		pgraph.bind( "dc","http://purl.org/dc/terms/" )
 		pgraph.bind( "xsd",'http://www.w3.org/2001/XMLSchema#' )
 		pgraph.bind( "ht",'http://www.w3.org/2006/http#' )
@@ -105,13 +105,13 @@ class pySde :
 		retval.add((bnode, ns_rdf["type"], ns_micro["Error"]))
 		retval.add((bnode, ns_dc["description"], Literal(full_msg)))
 		retval.add((bnode, ns_dc["date"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
-		
+
 		if uri != None :
 			htbnode = BNode()
 			retval.add( (bnode, ns_micro["context"],htbnode) )
 			retval.add( (htbnode, ns_rdf["type"], ns_ht["Request"]) )
 			retval.add( (htbnode, ns_ht["requestURI"], Literal(uri)) )
-		
+
 		if self.http_status != 200 :
 			htbnode = BNode()
 			retval.add( (bnode, ns_micro["context"],htbnode) )
@@ -119,7 +119,7 @@ class pySde :
 			retval.add( (htbnode, ns_ht["responseCode"], URIRef("http://www.w3.org/2006/http#%s" % self.http_status)) )
 
 		return retval
-		
+
 	def _get_input(self, name) :
 		"""
 		Trying to guess whether "name" is a URI, a string; it then tries to open these as such accordingly,
@@ -141,7 +141,7 @@ class pySde :
 				return file(name)
 		else :
 			return name
-	
+
 	####################################################################################################################
 	# Externally used methods
 	#
@@ -157,7 +157,7 @@ class pySde :
 		if graph == None :
 			# Create the RDF Graph that will contain the return triples...
 			graph   = Graph()
-			
+
 		if self.options.rdfa :
 			from pyRdfa         import pyRdfa
 			from pyRdfa.options import Options
@@ -171,7 +171,7 @@ class pySde :
 			graph = processor.graph_from_DOM(dom, graph)
 		if self.options.microdata :
 			from pyMicrodata import pyMicrodata
-			processor = pyMicrodata(base = self.base, vocab_expansion = self.options.vocab_expansion)
+			processor = pyMicrodata(base = self.base)
 			graph = processor.graph_from_DOM(dom, graph)
 			pass
 		if self.options.hturtle :
@@ -179,12 +179,12 @@ class pySde :
 			handle_embeddedRDF(dom.documentElement, graph, self.base)
 
 		return graph
-	
+
 	def graph_from_source(self, name, graph = None, rdfOutput = False) :
 		"""
 		Extract an RDF graph from an HTML source. The source is parsed, the RDF extracted, and the RDF Graph is
 		returned. This is a front-end to the L{pySde.graph_from_DOM} method.
-				
+
 		@param name: a URI, a file name, or a file-like object
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
@@ -211,7 +211,7 @@ class pySde :
 				self.http_status = 500
 				if not rdfOutput : raise e
 				return self._generate_error_graph(graph, str(e), uri=name)
-				
+
 			dom = None
 			try :
 				import warnings
@@ -225,7 +225,7 @@ class pySde :
 				# Something nasty happened:-(
 				self.http_status = 400
 				if not rdfOutput : raise e
-				return self._generate_error_graph(graph, str(e), uri=name)	
+				return self._generate_error_graph(graph, str(e), uri=name)
 
 		except Exception :
 			e = sys.exc_info()[1]
@@ -233,7 +233,7 @@ class pySde :
 			self.http_status = 500
 			if not rdfOutput : raise e
 			return self._generate_error_graph(graph, str(e), uri=name)
-	
+
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
 		"""
 		Extract and RDF graph from a list of RDFa sources and serialize them in one graph. The sources are parsed, the RDF
@@ -275,7 +275,7 @@ def processURI(uri, outputFormat, form) :
 	"""The standard processing of a microdata uri options in a form, ie, as an entry point from a CGI call.
 
 	The call accepts extra form options (eg, HTTP GET options) as follows:
-	
+
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
 	@param outputFormat: serialization formats, as understood by RDFLib. Note that though "turtle" is
 	a possible parameter value, some versions of the RDFLib turtle generation does funny (though legal) things with
@@ -309,7 +309,7 @@ def processURI(uri, outputFormat, form) :
 		base	= uri
 
 	vocab_expansion     = _get_option( "vocab_expansion", "true", False)
-	
+
 	sources = form.getlist("source")
 	rdfa      = "rdfa" in sources
 	microdata = "microdata" in sources
@@ -341,9 +341,9 @@ def processURI(uri, outputFormat, form) :
 		return retval
 	except HTTPError, h :
 		import cgi
-		
+
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
-		retval += "<html>\n"		
+		retval += "<html>\n"
 		retval += "<head>\n"
 		retval += "<title>HTTP Error in structured data processing</title>\n"
 		retval += "</head><body>\n"
@@ -361,7 +361,7 @@ def processURI(uri, outputFormat, form) :
 		import traceback, cgi
 
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s\n\n' % processor.http_status
-		retval += "<html>\n"		
+		retval += "<html>\n"
 		retval += "<head>\n"
 		retval += "<title>Exception in structured data processing</title>\n"
 		retval += "</head><body>\n"
@@ -387,4 +387,3 @@ def processURI(uri, outputFormat, form) :
 		return retval
 
 ###################################################################################################
-
