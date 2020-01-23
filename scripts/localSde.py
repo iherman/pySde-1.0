@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Run the sde extraction package locally
 """
@@ -36,7 +36,7 @@ where:
 """
 
 def usage() :
-	print usageText % sys.argv[0]
+	print(usageText % sys.argv[0])
 
 format       = "turtle"
 base         = ""
@@ -79,6 +79,6 @@ options = SDEOptions(hturtle=hturtle, rdfa = rdfa, microdata = microdata, vocab_
 processor = pySde(base, options)
 
 if len(value) >= 1 :
-	print processor.rdf_from_sources(value, outputFormat = format)
+	print(processor.rdf_from_sources(value, outputFormat = format))
 else :
-	print processor.rdf_from_source(sys.stdin, outputFormat = format)
+	print(processor.rdf_from_source(sys.stdin, outputFormat = format))

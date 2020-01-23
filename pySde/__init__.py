@@ -22,7 +22,7 @@ $Id: __init__.py,v 1.3 2012/09/05 16:42:44 ivan Exp $ $Date: 2012/09/05 16:42:44
 __version__ = "1.0"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
-__license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
+__license__ = 'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
 import sys
 PY3 = (sys.version_info[0] >= 3)
@@ -30,9 +30,9 @@ PY3 = (sys.version_info[0] >= 3)
 if PY3 :
 	from io import StringIO
 else :
-	from StringIO import StringIO
+	from io import StringIO
 
-import datetime, httpheader
+import datetime
 import os
 
 import rdflib
@@ -49,7 +49,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-import urlparse
+import urllib.parse
 
 from pyRdfa.utils import URIOpener
 from pyRdfa       import HTTPError, FailedSource
@@ -129,10 +129,10 @@ class pySde :
 		@type name: string or a file-like object
 		@return: a file like object if opening "name" is possible and successful, "name" otherwise
 		"""
-		if isinstance(name, basestring) :
+		if isinstance(name, str) :
 			# check if this is a URI, ie, if there is a valid 'scheme' part
 			# otherwise it is considered to be a simple file
-			if urlparse.urlparse(name)[0] != "" :
+			if urllib.parse.urlparse(name)[0] != "" :
 				url_request = URIOpener(name)
 				self.base   = url_request.location
 				return url_request.data
@@ -257,7 +257,13 @@ class pySde :
 		if self.empty == False :
 			for name in names :
 				self.graph_from_source(name, graph, rdfOutput)
-		return graph.serialize(format=outputFormat)
+
+		# Stupid difference between python2 and python3...
+		if PY3 :
+			return str(graph.serialize(format=outputFormat), encoding='utf-8')
+		else :
+			return graph.serialize(format=outputFormat)
+
 
 	def rdf_from_source(self, name, outputFormat = "pretty-xml", rdfOutput = False) :
 		"""
@@ -287,10 +293,10 @@ def processURI(uri, outputFormat, form) :
 	"""
 	def _get_option(param, compare_value, default) :
 		param_old = param.replace('_','-')
-		if param in form.keys() :
+		if param in list(form.keys()) :
 			val = form.getfirst(param).lower()
 			return val == compare_value
-		elif param_old in form.keys() :
+		elif param_old in list(form.keys()) :
 			# this is to ensure the old style parameters are still valid...
 			# in the old days I used '-' in the parameters, the standard favours '_'
 			val = form.getfirst(param_old).lower()
@@ -326,7 +332,7 @@ def processURI(uri, outputFormat, form) :
 	# the html source: should a graph be returned or an HTML page with an error message?
 
 	try :
-		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()))
+		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in list(form.keys())))
 		if outputFormat == "n3" :
 			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n'
 		elif outputFormat == "nt" or outputFormat == "turtle" :
@@ -339,7 +345,7 @@ def processURI(uri, outputFormat, form) :
 
 		retval += graph
 		return retval
-	except HTTPError, h :
+	except HTTPError as h :
 		import cgi
 
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
