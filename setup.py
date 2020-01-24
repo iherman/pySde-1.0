@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name="sde",
       description="Structured Data Extractor Libray",
-      version="1.0",
+      version="2.0",
       author="Ivan Herman",
       author_email="ivan@w3.org",
 	  maintainer="Ivan Herman",

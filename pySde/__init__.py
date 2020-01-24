@@ -19,7 +19,7 @@ $Id: __init__.py,v 1.3 2012/09/05 16:42:44 ivan Exp $ $Date: 2012/09/05 16:42:44
 
 """
 
-__version__ = "1.0"
+__version__ = "2.0"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = 'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -129,7 +129,14 @@ class pySde :
 		@type name: string or a file-like object
 		@return: a file like object if opening "name" is possible and successful, "name" otherwise
 		"""
-		if isinstance(name, str) :
+		try :
+			# Python 2 branch
+			is_string = isinstance(name, basestring)
+		except :
+			# Python 3 branch
+			is_string = isinstance(name, str)
+	
+		if is_string :
 			# check if this is a URI, ie, if there is a valid 'scheme' part
 			# otherwise it is considered to be a simple file
 			if urllib.parse.urlparse(name)[0] != "" :
@@ -137,8 +144,8 @@ class pySde :
 				self.base   = url_request.location
 				return url_request.data
 			else :
-				self.base = name
-				return file(name)
+				self.base = 'file://' + name
+				return open(name, 'rb')
 		else :
 			return name
 
