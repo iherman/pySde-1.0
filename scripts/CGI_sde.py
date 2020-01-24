@@ -18,7 +18,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 $Id: sde.py,v 1.1 2012/08/22 12:50:30 ivan Exp $
 """
 
-__version__ = "1.0"
+__version__ = "2.0"
 import cgi
 import cgitb
 import sys, os

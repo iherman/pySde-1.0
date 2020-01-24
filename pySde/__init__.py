@@ -2,9 +2,9 @@
 """
 
 @summary: Structural data extractor (distiller)
-@requires: Python version 2.5 or up
-@requires: U{RDFLib<http://rdflib.net>}
-@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing; note possible dependecies on Python's version on the project's web site
+@requires: Python version 2.7 or 3.8 or up
+@requires: U{RDFLib<http://rdflib.net>} version 5.0 or up
+@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing; note possible dependencies on Python's version on the project's web site
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
